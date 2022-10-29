@@ -2,8 +2,8 @@
 // 2021/08/04 issue236 二重送信防止のロジックが出荷依頼登録以外は実装されていない demachi
 // 2021/07/30 issue215 出荷依頼登録で発送元住所と発送元氏名をデフォルトの値から変更して出荷依頼してもDBに登録される値はデフォルトの値になる demachi
 // 2021/07/30 issue231 出荷依頼登録での出荷依頼Noの採番ロジック変更とテーブルshipping_requestのカラム追加 demachi
-require_once ('../common/function.php');
-require_once ('../db/DB.php');
+require_once('../common/function.php');
+require_once('../db/DB.php');
 
 // 一日加算した日付
 date_default_timezone_set('Asia/Tokyo');
@@ -15,7 +15,7 @@ if (isset($_POST['shipping_request'])) {
     // トークンの確認
     $is_token_valid = is_token_valid('token', 'token_in_shipping_request_registration');
     if (!$is_token_valid) {
-    // --------------------------------------------------issue236 end---------------------------------------------------------
+        // --------------------------------------------------issue236 end---------------------------------------------------------
         die('ダブりでの送信を検知したので１回分のみ出荷登録しました。');
     }
 }
@@ -109,7 +109,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $sql .= " AND deleted_flag = FALSE";
 
         $stmt = $db->prepare($sql);
-
     } catch (PDOException $e) {
         die('エラー：' . $e->getMessage());
     }
@@ -126,7 +125,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $counter_i = 0;
     $select_num = 0;
 
-    if (! (empty($goods_result))) {
+    if (!(empty($goods_result))) {
         foreach ($goods_result as $varr) {
             if ($select1_id == $varr['owner_id'] . $varr['color_size_id'] . $varr['goods_id']) {
                 $goods_color_size .= "\t\t\t\t\t<option class=\"w-100\" value=\"{$varr['owner_id']}{$varr['color_size_id']}{$varr['goods_id']}\" selected>{$varr['goods_name']}:{$varr['color']}:{$varr['size']}</option>\n";
@@ -135,17 +134,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             } else {
                 $goods_color_size .= "\t\t\t\t\t<option value=\"{$varr['owner_id']}{$varr['color_size_id']}{$varr['goods_id']}\">{$varr['goods_name']}:{$varr['color']}:{$varr['size']}</option>\n";
             }
-            $counter_i ++;
+            $counter_i++;
         }
-
-
     } else {
         echo '商品名は見つかりませんでした';
     }
 }
 
 // "表示"ボタンが押された際実施
-if (isset($_POST['display']) and (! (empty($goods_result)))) {
+if (isset($_POST['display']) and (!(empty($goods_result)))) {
     $initial_array = $goods_result[0];
 }
 
@@ -156,11 +153,11 @@ if (isset($_POST['shipping_request'])) {
     // QRコードを保存
     // QRコードが張られていない場合は保存しない
     $image = $_FILES['convenience_store_qr_code'];
-    if (! empty($image['name'])) {
+    if (!empty($image['name'])) {
         $filepath = pathinfo($image['name']); // ファイル名を取得する
         $extension = $filepath['extension']; // ファイル名から拡張子を切り出す
         $convenience_store_qr_code_image_name = "c_store_qr_" . date("YmdHis") . "." . $extension; // c_store_qr_日付時間秒.拡張子
-        if (! move_uploaded_file($image['tmp_name'], '../common/images/' . $owner_id . '/qr/' . $convenience_store_qr_code_image_name)) {
+        if (!move_uploaded_file($image['tmp_name'], '../common/images/' . $owner_id . '/qr/' . $convenience_store_qr_code_image_name)) {
             echo 'アップロードされたファイルの保存に失敗しました。';
         }
     } else {
@@ -168,11 +165,11 @@ if (isset($_POST['shipping_request'])) {
     }
 
     $image = $_FILES['other_qr_code'];
-    if(! empty($image['name'])){
+    if (!empty($image['name'])) {
         $filepath = pathinfo($image['name']); // ファイル名を取得する
         $extension = $filepath['extension']; // ファイル名から拡張子を切り出す
         $other_qr_code_image_name = "other_qr_" . date("YmdHis") . "." . $extension; // other_qr_日付時間秒.拡張子
-        if (! move_uploaded_file($image['tmp_name'], '../common/images/' . $owner_id . '/qr/' . $other_qr_code_image_name)) {
+        if (!move_uploaded_file($image['tmp_name'], '../common/images/' . $owner_id . '/qr/' . $other_qr_code_image_name)) {
             echo 'アップロードされたファイルの保存に失敗しました。';
         }
     } else {
@@ -180,7 +177,7 @@ if (isset($_POST['shipping_request'])) {
     }
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" and (! (empty($goods_result)))) {
+if ($_SERVER["REQUEST_METHOD"] == "POST" and (!(empty($goods_result)))) {
     $initial_goods_name = $initial_array['goods_name'];
     $initial_goods_id = $initial_array['goods_id'];
     $initial_color = $initial_array['color'];
@@ -198,7 +195,8 @@ $shipping_method = array(
     "5" => "宅急便コンパクト",
     "6" => "レターパックプラス",
     "7" => "宅急便",
-    "8" => "その他"
+    "8" => "その他",
+    "9" => "ネコポス（集荷）",
 );
 // 発送方法と配送業者の対応
 $relations_between_shipping_method_and_delivery_company = array(
@@ -209,7 +207,8 @@ $relations_between_shipping_method_and_delivery_company = array(
     "宅急便コンパクト" => "ヤマト運輸",
     "レターパックプラス" => "郵便局",
     "宅急便" => "ヤマト運輸",
-    "その他" => "佐川急便"
+    "その他" => "佐川急便",
+    "ネコポス（集荷）" => "ヤマト運輸",
 );
 $shipping = '';
 foreach ($shipping_method as $key => $value) {
@@ -313,10 +312,10 @@ EOM;
     $rest = "001"; // 出荷依頼Noの下位３桁
     // --------------------------------------------------issue231 end---------------------------------------------------------
     if (($max_shipping_request_no >= $shipping_request_no) and ($max_shipping_request_no != NULL)) {
-        $rest = substr($max_shipping_request_no, - 3);
+        $rest = substr($max_shipping_request_no, -3);
         $rest = $rest + 1;
         $rest = sprintf('%03d', $rest);
-        $shipping_request_no = substr($max_shipping_request_no, 0, - 3) . $rest;
+        $shipping_request_no = substr($max_shipping_request_no, 0, -3) . $rest;
     }
 
     try {
@@ -405,205 +404,205 @@ EOM;
 
 ?>
 <main>
-<!-- 以下SP -->
-<div class="mb-5">
-  <form method="post" action="shipment_request_registration.php" enctype="multipart/form-data">
-    <div class="row mb-5">
-        <div class="col-12">
-            <h1 class="page_title text-center mt-5">出荷依頼登録</h1>
-            <div class="select_owner_wrapper">
-                    <?php if($login_role == 1): ?>
-                    <input type="hidden" name="owner_id" value="<?php echo $_SESSION['login_owner_id']; ?>">
-                    <?php else: ?>
-                    <label>商品所有者：&ensp;
-                        <select class="mr-auto" name="owner_id">
-                            <?php echo $owner; ?>
-                        </select>
-                    </label>
-                    <br class="d-lg-none">
-                    <?php endif; ?>
-                    <label>出荷予定日：&ensp;<input class="mr-auto" type="date" name="regist_shipping_scheduled_day" value="<?php echo $day; ?>"></label>
-                    <br class="d-lg-none">
-                    <label>
+    <!-- 以下SP -->
+    <div class="mb-5">
+        <form method="post" action="shipment_request_registration.php" enctype="multipart/form-data">
+            <div class="row mb-5">
+                <div class="col-12">
+                    <h1 class="page_title text-center mt-5">出荷依頼登録</h1>
+                    <div class="select_owner_wrapper">
+                        <?php if ($login_role == 1) : ?>
+                            <input type="hidden" name="owner_id" value="<?php echo $_SESSION['login_owner_id']; ?>">
+                        <?php else : ?>
+                            <label>商品所有者：&ensp;
+                                <select class="mr-auto" name="owner_id">
+                                    <?php echo $owner; ?>
+                                </select>
+                            </label>
+                            <br class="d-lg-none">
+                        <?php endif; ?>
+                        <label>出荷予定日：&ensp;<input class="mr-auto" type="date" name="regist_shipping_scheduled_day" value="<?php echo $day; ?>"></label>
+                        <br class="d-lg-none">
+                        <label>
                             商品名：&ensp;<input class="mr-auto" type="text" name="goods_name" id="goods_id" value="<?php echo $goods_name; ?>">
-                    </label>
-                    <br class="d-lg-none">
-                    <input class="button " type="submit" name="display" value="表示">
-                    <br class="d-lg-none">
-            </div>
-        </div>
-    </div>
-    <?php if(!empty($_POST['display'])): ?>
-    <div class="row">
-        <div class="col-12">
-                <table class="table mb-5 shipment_request_registration_table">
-                    <tbody>
-                        <input id="product_code" class="table_input" type="hidden" name="goods_id" value="<?php echo $initial_goods_id; ?>">
-                        <input id="color" class="table_input" type="hidden" name="color_id" value="<?php echo $initial_color; ?>">
-                        <input id="size" class="table_input" type="hidden" name="size_id" value="<?php echo $initial_size; ?>">
-                        <tr class="sp_column_name shipment_record_table_title">
-                            <th colspan="2">商品名：色：サイズ</th>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                <select id="select1" class="w-100 py-1" name="select1_id" onchange="selectbox_change();">
-                                    <?php echo $goods_color_size; ?>
-                                </select>
-                                <div id="output"></div>
-                            </td>
-                        </tr>
-                        <tr class="sp_column_name shipment_record_table_title">
-                            <th colspan="2">商品名</th>
-                        </tr>
-                        <tr>
-                            <td id="goods_name" colspan="2"><?php echo $initial_goods_name; ?></td>
-                        </tr>
-                        <tr class="sp_column_name shipment_record_table_title">
-                            <th class="table_cell_half">色</th>
-                            <th class="table_cell_half">サイズ</th>
-                        </tr>
-                        <tr>
-                            <td id="color_td" class="table_cell_half"><?php echo $initial_color; ?></td>
-                            <td id="size_td" class="table_cell_half"><?php echo $initial_size; ?></td>
-                        </tr>
-                        <tr class="sp_column_name shipment_record_table_title">
-                            <th colspan="2">出荷数量</th>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                <input class="table_input text-center" type="number" name="shipment_id" min="1" value="1">
-                            </td>
-                        </tr>
-                        <tr class="sp_column_name shipment_record_table_title">
-                            <th colspan="2">発送方法</th>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                <select class="w-100 py-1" name="shipping_id">
-                                    <?php echo $shipping; ?>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr class="sp_column_name shipment_record_table_title">
-                            <th colspan="2">商品画像</th>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                <p class="text-center font-weight-bold">商品画像</p>
-                                <div class="goods_img_wrapper">
-                                    <img id="image01" class="goods_img" name="picture_id" src="<?php echo $initial_picture; ?>" style="max-width:100%;">
-                                </div>
-                            </td>
-                        </tr>
-                        <tr class="sp_column_name shipment_record_table_title">
-                            <th colspan="2">コンビニ出荷用バーコード</th>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                <div class="user-icon-dnd-wrapper">
-                                    <input type="file" name="convenience_store_qr_code" class="input_file" accept="image/*">
-                                    <div class="preview_field"></div>
-                                    <div class="drop_area">
-                                        <p class="drag_and_drop">drag and drop</p>
-                                    </div>
-                                    <div class="icon_clear_button"></div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr class="sp_column_name shipment_record_table_title">
-                            <th colspan="2">ヤマト営業所（郵便局）QRコード</th>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                <div class="user-icon-dnd-wrapper">
-                                    <input type="file" name="other_qr_code" class="input_file" accept="image/*">
-                                    <div class="preview_field"></div>
-                                    <div class="drop_area">
-                                        <p class="drag_and_drop">drag and drop</p>
-                                    </div>
-                                    <div class="icon_clear_button"></div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr class="sp_column_name shipment_record_table_title">
-                            <th colspan="2">郵便番号</th>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                <label>〒  <input class="table_input w-auto" type="text" maxlength="9" name="zip_code" value="<?php echo $zip_code; ?>"></label>
-                            </td>
-                        </tr>
-                        <tr class="sp_column_name shipment_record_table_title">
-                            <th colspan="2">住所</th>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                <textarea class="table_input" name="address" value="<?php echo $address; ?>"></textarea>
-                            </td>
-                        </tr>
-                        <tr class="sp_column_name shipment_record_table_title">
-                            <th colspan="2">送付先氏名</th>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                <input class="table_input" type="text" name="destination_name" value="<?php echo $destination_name; ?>">
-                            </td>
-                        </tr>
-                        <tr class="sp_column_name shipment_record_table_title">
-                            <th colspan="2">発送元住所</th>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                <textarea class="table_input" name="shipment_source"><?php echo $shipment_source; ?></textarea>
-                            </td>
-                        </tr>
-                        <tr class="sp_column_name shipment_record_table_title">
-                            <th colspan="2">発送元氏名</th>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                <input class="table_input" type="text" name="shipment_source_name" value="<?php echo $shipment_source_name; ?>">
-                            </td>
-                        </tr>
-                        <tr class="sp_column_name shipment_record_table_title">
-                            <th  colspan="2">その他氏名</th>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                <input class="table_input" type="text" name="other_name" value="<?php echo $other_name; ?>">
-                            </td>
-                        </tr>
-                        <tr class="sp_column_name shipment_record_table_title">
-                            <th  colspan="2">備考欄</th>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                <textarea class="table_input" name="remarks" maxlength="255"></textarea>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="row">
-                    <div class="col-12">
-                        <input type="hidden" name="token" value="<?php echo $token;?>">
-                        <button id="shipping_request" class="button" type="submit" name="shipping_request" value="seach">出荷依頼</button>
+                        </label>
+                        <br class="d-lg-none">
+                        <input class="button " type="submit" name="display" value="表示">
+                        <br class="d-lg-none">
                     </div>
                 </div>
-        </div>
+            </div>
+            <?php if (!empty($_POST['display'])) : ?>
+                <div class="row">
+                    <div class="col-12">
+                        <table class="table mb-5 shipment_request_registration_table">
+                            <tbody>
+                                <input id="product_code" class="table_input" type="hidden" name="goods_id" value="<?php echo $initial_goods_id; ?>">
+                                <input id="color" class="table_input" type="hidden" name="color_id" value="<?php echo $initial_color; ?>">
+                                <input id="size" class="table_input" type="hidden" name="size_id" value="<?php echo $initial_size; ?>">
+                                <tr class="sp_column_name shipment_record_table_title">
+                                    <th colspan="2">商品名：色：サイズ</th>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <select id="select1" class="w-100 py-1" name="select1_id" onchange="selectbox_change();">
+                                            <?php echo $goods_color_size; ?>
+                                        </select>
+                                        <div id="output"></div>
+                                    </td>
+                                </tr>
+                                <tr class="sp_column_name shipment_record_table_title">
+                                    <th colspan="2">商品名</th>
+                                </tr>
+                                <tr>
+                                    <td id="goods_name" colspan="2"><?php echo $initial_goods_name; ?></td>
+                                </tr>
+                                <tr class="sp_column_name shipment_record_table_title">
+                                    <th class="table_cell_half">色</th>
+                                    <th class="table_cell_half">サイズ</th>
+                                </tr>
+                                <tr>
+                                    <td id="color_td" class="table_cell_half"><?php echo $initial_color; ?></td>
+                                    <td id="size_td" class="table_cell_half"><?php echo $initial_size; ?></td>
+                                </tr>
+                                <tr class="sp_column_name shipment_record_table_title">
+                                    <th colspan="2">出荷数量</th>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <input class="table_input text-center" type="number" name="shipment_id" min="1" value="1">
+                                    </td>
+                                </tr>
+                                <tr class="sp_column_name shipment_record_table_title">
+                                    <th colspan="2">発送方法</th>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <select class="w-100 py-1" name="shipping_id">
+                                            <?php echo $shipping; ?>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr class="sp_column_name shipment_record_table_title">
+                                    <th colspan="2">商品画像</th>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <p class="text-center font-weight-bold">商品画像</p>
+                                        <div class="goods_img_wrapper">
+                                            <img id="image01" class="goods_img" name="picture_id" src="<?php echo $initial_picture; ?>" style="max-width:100%;">
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="sp_column_name shipment_record_table_title">
+                                    <th colspan="2">コンビニ出荷用バーコード</th>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <div class="user-icon-dnd-wrapper">
+                                            <input type="file" name="convenience_store_qr_code" class="input_file" accept="image/*">
+                                            <div class="preview_field"></div>
+                                            <div class="drop_area">
+                                                <p class="drag_and_drop">drag and drop</p>
+                                            </div>
+                                            <div class="icon_clear_button"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="sp_column_name shipment_record_table_title">
+                                    <th colspan="2">ヤマト営業所（郵便局）QRコード</th>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <div class="user-icon-dnd-wrapper">
+                                            <input type="file" name="other_qr_code" class="input_file" accept="image/*">
+                                            <div class="preview_field"></div>
+                                            <div class="drop_area">
+                                                <p class="drag_and_drop">drag and drop</p>
+                                            </div>
+                                            <div class="icon_clear_button"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="sp_column_name shipment_record_table_title">
+                                    <th colspan="2">郵便番号</th>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <label>〒 <input class="table_input w-auto" type="text" maxlength="9" name="zip_code" value="<?php echo $zip_code; ?>"></label>
+                                    </td>
+                                </tr>
+                                <tr class="sp_column_name shipment_record_table_title">
+                                    <th colspan="2">住所</th>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <textarea class="table_input" name="address" value="<?php echo $address; ?>"></textarea>
+                                    </td>
+                                </tr>
+                                <tr class="sp_column_name shipment_record_table_title">
+                                    <th colspan="2">送付先氏名</th>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <input class="table_input" type="text" name="destination_name" value="<?php echo $destination_name; ?>">
+                                    </td>
+                                </tr>
+                                <tr class="sp_column_name shipment_record_table_title">
+                                    <th colspan="2">発送元住所</th>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <textarea class="table_input" name="shipment_source"><?php echo $shipment_source; ?></textarea>
+                                    </td>
+                                </tr>
+                                <tr class="sp_column_name shipment_record_table_title">
+                                    <th colspan="2">発送元氏名</th>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <input class="table_input" type="text" name="shipment_source_name" value="<?php echo $shipment_source_name; ?>">
+                                    </td>
+                                </tr>
+                                <tr class="sp_column_name shipment_record_table_title">
+                                    <th colspan="2">その他氏名</th>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <input class="table_input" type="text" name="other_name" value="<?php echo $other_name; ?>">
+                                    </td>
+                                </tr>
+                                <tr class="sp_column_name shipment_record_table_title">
+                                    <th colspan="2">備考欄</th>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <textarea class="table_input" name="remarks" maxlength="255"></textarea>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="row">
+                            <div class="col-12">
+                                <input type="hidden" name="token" value="<?php echo $token; ?>">
+                                <button id="shipping_request" class="button" type="submit" name="shipping_request" value="seach">出荷依頼</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </form>
     </div>
-    <?php endif; ?>
-</form>
-</div>
-<!-- 以上SP -->
+    <!-- 以上SP -->
 
 </main>
 <script type="text/javascript" src="../common/js/drag_and_drop.js"></script>
 <!-- "商品名:色:サイズ"を変更したとき用のjavascript -->
 <script>
-function selectbox_change() {
-    const target = document.getElementById("output");
-    const selindex = select1.selectedIndex;
-    var js_array = JSON.parse('<?php echo $json_array;?> ');
+    function selectbox_change() {
+        const target = document.getElementById("output");
+        const selindex = select1.selectedIndex;
+        var js_array = JSON.parse('<?php echo $json_array; ?> ');
 
         var data_row = js_array[selindex];
 
@@ -611,10 +610,10 @@ function selectbox_change() {
         document.getElementById("color").value = data_row["color"];
         document.getElementById("size").value = data_row["size"];
         document.getElementById("image01").src = '../common/images/' + data_row["owner_id"] + '/goods/' + data_row["picture"];
-        document.getElementById("goods_name").innerHTML = "<td id='goods_name' colspan='2'>"+ data_row["goods_name"] + "</td>";
-        document.getElementById("color_td").innerHTML = "<td id='color_td' class='table_cell_half'>"+ data_row["color"] + "</td>";
-        document.getElementById("size_td").innerHTML = "<td id='size_td' class='table_cell_half'>"+ data_row["size"] + "</td>";
-}
+        document.getElementById("goods_name").innerHTML = "<td id='goods_name' colspan='2'>" + data_row["goods_name"] + "</td>";
+        document.getElementById("color_td").innerHTML = "<td id='color_td' class='table_cell_half'>" + data_row["color"] + "</td>";
+        document.getElementById("size_td").innerHTML = "<td id='size_td' class='table_cell_half'>" + data_row["size"] + "</td>";
+    }
 </script>
 
 <?php

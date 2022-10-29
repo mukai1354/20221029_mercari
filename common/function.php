@@ -1,7 +1,7 @@
 <?php
 // 2021/10/12 issue289 出荷依頼確認　出荷予定日の変更 demachi
 // 2021/08/04 issue236 二重送信防止のロジックが出荷依頼登録以外は実装されていない demachi
-require_once ('htmlCommon.php');
+require_once('htmlCommon.php');
 
 define("TOKEN_LENGTH", 16); // 16*2=32byte
 define("STRETCH_COUNT", 1);
@@ -42,6 +42,7 @@ const SHIPPING_METHODS = [
     "6" => "レターパックプラス",
     "7" => "宅急便",
     "8" => "その他",
+    "9" => "ネコポス（集荷）",
 ];
 
 // 発送方法と配送業者の対応
@@ -54,6 +55,7 @@ const RELATIONS_BETWEEN_SHIPPING_METHODS_AND_DELIVERY_COMPANIES = [
     "レターパックプラス" => "郵便局",
     "宅急便" => "ヤマト運輸",
     "その他" => "佐川急便",
+    "ネコポス（集荷）" => "ヤマト運輸",
 ];
 
 /**
@@ -87,7 +89,8 @@ function get_csrf_token()
  * @param string $session_token_named_key トークンを取得するための$_SESSIONのキー
  * @return boolean
  */
-function is_token_valid(string $posted_token_named_key, string $session_token_named_key): bool {
+function is_token_valid(string $posted_token_named_key, string $session_token_named_key): bool
+{
 
     $posted_token = getpstStrs($posted_token_named_key);
     $session_token = isset($_SESSION[$session_token_named_key]) ? $_SESSION[$session_token_named_key] : "";
@@ -105,7 +108,7 @@ function strechedPassword($password)
 {
     $hash_pass = '';
 
-    for ($i = 0; $i < STRETCH_COUNT; $i ++) {
+    for ($i = 0; $i < STRETCH_COUNT; $i++) {
         $hash_pass = password_hash($password, PASSWORD_DEFAULT);
     }
 
@@ -185,7 +188,7 @@ function getMonday()
 function replace_text_to_asterisk($text)
 {
     $asterisk = '';
-    for ($i = 1; $i <= strlen($text); $i ++) {
+    for ($i = 1; $i <= strlen($text); $i++) {
         $asterisk = $asterisk . '*';
     }
     return $asterisk;
@@ -196,7 +199,7 @@ function getUniqueArray($array, $column)
     $tmp = [];
     $uniqueArray = [];
     foreach ($array as $value) {
-        if (! in_array($value[$column], $tmp)) {
+        if (!in_array($value[$column], $tmp)) {
             $tmp[] = $value[$column];
             $uniqueArray[] = $value;
         }
@@ -311,7 +314,7 @@ function get_stock_quantity($db, $varr, $years_months, $first_day, $last_day)
  * @param string $year_month
  * @return boolean
  */
-function is_monthly_closed($db, string $year_month):bool
+function is_monthly_closed($db, string $year_month): bool
 {
     $row_count = 0;
     $deadline_status = '';
@@ -344,22 +347,24 @@ function is_monthly_closed($db, string $year_month):bool
 /**
  * debugDumpParamsの出力を変数へ取り込む関数
  */
-function pdo_debugStrParams($s) {
-  ob_start();
-  $s->debugDumpParams();
-  $r = ob_get_contents();
-  ob_end_clean();
-  return $r;
+function pdo_debugStrParams($s)
+{
+    ob_start();
+    $s->debugDumpParams();
+    $r = ob_get_contents();
+    ob_end_clean();
+    return $r;
 }
 
 /**
  * 現在時刻を取得する
  * @return string 現在時刻
  */
-function getTime() {
-    $miTime = explode('.',microtime(true));
-    $msec = str_pad(substr($miTime[1], 0, 3) , 3, "0");
-    $time = date('Y-m-d H:i:s', $miTime[0]) . '.' .$msec;
+function getTime()
+{
+    $miTime = explode('.', microtime(true));
+    $msec = str_pad(substr($miTime[1], 0, 3), 3, "0");
+    $time = date('Y-m-d H:i:s', $miTime[0]) . '.' . $msec;
     return $time;
 }
 
@@ -369,7 +374,8 @@ function getTime() {
  * @param string $message
  * @return void
  */
-function log_message(string $message) {
+function log_message(string $message)
+{
     $date = date('Ymd', time());
     $time = getTime();
     $logMessage = "[{$time}]" . rtrim($message) . "\n";
@@ -385,7 +391,7 @@ function log_message(string $message) {
  * @param string $shipping_scheduled_day
  * @return int
  */
-function get_new_shipping_request_no(DB $db, string $owner_id, string $shipping_scheduled_day):int
+function get_new_shipping_request_no(DB $db, string $owner_id, string $shipping_scheduled_day): int
 {
     $formatted_shipping_scheduled_day = str_replace('-', '', $shipping_scheduled_day);
     $condition_of_shipping_request_no = $formatted_shipping_scheduled_day . '%';
@@ -422,7 +428,7 @@ function get_new_shipping_request_no(DB $db, string $owner_id, string $shipping_
  * @param int $shipping_request_no
  * @param int $details_no
  */
-function cancel_shipping_request(DB $db, string $owner_id, int $shipping_request_no, int $details_no):void
+function cancel_shipping_request(DB $db, string $owner_id, int $shipping_request_no, int $details_no): void
 {
     $sql = <<< EOM
         UPDATE
@@ -434,7 +440,7 @@ function cancel_shipping_request(DB $db, string $owner_id, int $shipping_request
             AND
             shipping_request_no = :shipping_request_no
             AND
-            details_no = :details_no 
+            details_no = :details_no
         ;
         EOM;
     $stmt = $db->prepare($sql);
@@ -462,7 +468,7 @@ function check_shipping_request_record_for_exclusive_control(
     int $shipping_request_no,
     int $details_no,
     string $updated_at_to_be_compared
-):bool {
+): bool {
     // 引数で渡されたupdated_atとDBから再度取得したupdated_atを比較。
     $sql = <<< EOM
         SELECT
@@ -499,7 +505,7 @@ function check_shipping_request_record_for_exclusive_control(
  *
  * @return string[]
  */
-function get_all_shipping_methods():array
+function get_all_shipping_methods(): array
 {
     return SHIPPING_METHODS;
 }
@@ -510,7 +516,7 @@ function get_all_shipping_methods():array
  * @param string $shipping_id
  * @return string
  */
-function get_shipping_method_by_shipping_id(string $shipping_id):string
+function get_shipping_method_by_shipping_id(string $shipping_id): string
 {
     return SHIPPING_METHODS[$shipping_id];
 }
@@ -521,7 +527,7 @@ function get_shipping_method_by_shipping_id(string $shipping_id):string
  * @param string $shipping_method
  * @return string
  */
-function get_delivery_company_by_shipping_method(string $shipping_method):string
+function get_delivery_company_by_shipping_method(string $shipping_method): string
 {
     return RELATIONS_BETWEEN_SHIPPING_METHODS_AND_DELIVERY_COMPANIES[$shipping_method];
 }
@@ -533,7 +539,7 @@ function get_delivery_company_by_shipping_method(string $shipping_method):string
  * @param string $default_selected_owner_id
  * @return string
  */
-function get_option_tags_for_owners(DB $db, string $default_selected_owner_id):string
+function get_option_tags_for_owners(DB $db, string $default_selected_owner_id): string
 {
     // 商品所有者一覧を取得
     $sql = <<< EOM
