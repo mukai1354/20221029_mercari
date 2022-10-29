@@ -1,0 +1,3 @@
+# @version 1
+User-Agent: *
+Disallow: /

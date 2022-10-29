@@ -1,0 +1,627 @@
+@charset "utf-8";
+/* CSS Document */
+
+@media print{
+    table, th, td {
+         border:solid 2px black;
+         border-collapse:collapse;
+    }
+}
+
+body {
+    -webkit-print-color-adjust: exact;
+}
+
+
+/*border調整用*/
+.bt-1 {
+    border-top: 1px solid #000;
+}
+
+.br-1 {
+    border-right: 1px solid #000;
+}
+
+.bb-1 {
+    border-bottom: 1px solid #000;
+}
+
+.bl-1 {
+    border-left: 1px solid #000;
+}
+
+/* reset layout + Type
+------------------------------------------------------------------------------*/
+/* 以下TOPへ戻るボタン */
+#page_top{
+  width: 30px;
+  height: 30px;
+  position: fixed;
+  right: 20px;
+  bottom: 60px;
+  opacity: 0.8;
+}
+
+#page_bottom{
+  width: 30px;
+  height: 30px;
+  position: fixed;
+  right: 20px;
+  bottom: 15px;
+  opacity: 0.8;
+}
+
+#page_top a,
+#page_bottom a {
+  width: 30px;
+  height: 30px;
+  text-decoration: none;
+}
+
+.go_to_top {
+    width: 100%;
+    height: 100%;
+}
+
+.go_to_bottom {
+    width: 100%;
+    height: 100%;
+    transform: scaleY(-1);
+}
+
+/* 出品依頼登録終了時の文字 */
+.finished {
+    font-weight: bold;
+    font-size: 20px;
+    color: red;
+    text-align: center;
+    margin-top: 50px;
+    margin-bottom: 100px;
+}
+
+/* チェックボックス大きく */
+.checkbox {
+    width: 20px;
+    height: 20px;
+}
+
+/* 以下PC */
+@media screen and (min-width:992px) {
+    * {
+        margin: 0;
+        padding: 0;
+        font-style: normal;
+        font-weight: normal;
+    }
+
+    strong,
+    em,
+    b,
+    th {
+        font-weight: bold;
+    }
+
+    small {
+        font-size: 13px;
+    }
+
+    img {
+        border: none;
+        max-width: 100%;
+        /* 画像を画面幅に合わせて縮小 */
+        height: auto;
+    }
+
+    iframe {
+        width: 100%;
+    }
+
+
+    .m_goods_table {
+        width: 100%;
+        table-layout: fixed;
+        word-break: break-all;
+        word-wrap: break-all;
+    }
+
+
+    /* フレーム幅を画面幅に合わせて縮小 */
+
+    input,
+    button,
+    select {
+        margin: 0;
+        padding: 0;
+        background: none;
+        border: none;
+        border-radius: 0;
+        outline: none;
+        /*
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  */
+    }
+
+    fieldset {
+        border: none;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    select {
+        border-bottom: 1px dotted gray;
+    }
+
+    input[type="submit"],
+    input[type="button"],
+    button {
+        margin-top: 1rem;
+        padding: 6px 15px;
+        border: black 2px solid;
+        cursor: pointer;
+    }
+
+    /* All
+------------------------------------------------------------------------------*/
+
+    body {
+        color: #333;
+        font-family: Osaka, sans-serif;
+        /*font-size: 1.6rem;*/
+        line-height: 2;
+        letter-spacing: 1px;
+        -webkit-text-size-adjust: 100%;
+        /* テキスト自動拡大アルゴリズム */
+        text-size-adjust: 100%;
+        font-size-adjust: 0.5;
+        /* アスペクト比 */
+        text-align: center;
+    }
+
+    /* Link
+------------------------------------------------------------------------------*/
+
+    a:link {}
+
+    a:visited {}
+
+    a:hover,
+    a:focus,
+    a:active {}
+
+    /* Box
+------------------------------------------------------------------------------*/
+
+    #container {
+        margin: 0 auto;
+        backgtround: #eee;
+    }
+
+    header p {
+        font-size: 1rem;
+    }
+
+    /* table
+------------------------------------------------------------------------------*/
+    caption {
+        caption-side: top;
+    }
+
+    table,
+    th,
+    td {
+        border-width: 2px;
+        border-color: black;
+        border-style: solid;
+    }
+
+    label,
+    input[type="password"],
+    input[type="text"],
+    select {
+        /*width: 20rem;*/
+        margin: 0 .5rem;
+        height: 3rem;
+        box-sizing: border-box;
+    }
+
+    /* navigation bar
+------------------------------------------------------------------------------*/
+
+    .wrapper {
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid black;
+        /*display:inline-block;*/
+        width: 80%;
+        margin-left: auto;
+        /*追加*/
+        margin-right: auto;
+        /*追加*/
+    }
+
+    .container {
+        display: flex;
+    }
+
+    .noborder {
+        border: 0px none;
+    }
+
+    /*
+.table_width2{
+  border-width: 1px;
+  border-color: black;
+  border-style: solid;
+}
+*/
+
+    .tr-even:nth-of-type(even) {
+        background-color: #fed4;
+    }
+
+    .width-30px {
+        width: 30px;
+    }
+
+    .width-100px {
+        width: 100px;
+    }
+
+    .height-100px {
+        height: 100px;
+    }
+
+    .ob-fit-cover {
+        object-fit: cover;
+    }
+
+    .margin_left {
+        margin-left: 30px;
+    }
+
+    .margin_top_left {
+        margin-top: 34px;
+        margin-left: 30px;
+    }
+
+    .mt-30px {
+        margin-top: 30px;
+    }
+
+    .mb-50px {
+        margin-bottom: 50px;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .vertical-top {
+        vertical-align: top;
+    }
+
+    .vertical-middle {
+        vertical-align: middle;
+    }
+
+    .max-height-100 {
+        max-height: 100%;
+    }
+
+    .border-none {
+        border: none;
+    }
+
+    .content-left {
+        width: 40%;
+        margin-right: 5%;
+    }
+
+    .content-right {
+        width: 55%;
+    }
+
+    .product-image {
+        width: 30%;
+        margin-right: 5%;
+    }
+
+    .qr-code {
+        width: 30%;
+        margin-left: 5%;
+    }
+
+    .m-goods-modal-table-tbody-tr {
+        cursor: pointer;
+    }
+
+    .m-goods-modal-table-tbody-tr:hover {
+        background-color: #CCFFFF;
+    }
+
+    .table-td-img-product-image {
+        width: 300px;
+        height: 300px;
+        object-fit: cover;
+    }
+
+    .bg-color-aqua {
+        background-color: rgb(202, 243, 255);
+    }
+
+    .bg-color-lightgray {
+        background-color: #d3d3d3;
+    }
+
+    .bg_color_yellow {
+        background-color: #FFFF33;
+    }
+
+    /* 出荷実績入力 */
+    .shipment_record_table {
+        table-layout: fixed;
+        width: 100%;
+        overflow: scroll;
+    }
+
+    .w-150px {
+        width: 150px;
+    }
+
+    .w-250px {
+        width: 250px;
+    }
+
+    .shipment_record_table_title {
+        background-color: #cfc;
+    }
+
+    .shipment_record_img {
+        width: 150px;
+        height: 150px;
+    }
+
+    .shipment_record_qr_img {
+        width: 250px;
+        height: 300px;
+    }
+
+    .object_fit {
+        width: 250px;
+        height: 300px;
+        object-fit: cover;
+    }
+
+    .object_fit2 {
+        width: 300px;
+        height: 300px;
+        margin: 0 auto;
+    }
+
+    .shipping_prepare_qr {
+        width: 300px;
+        height: 300px;
+        object-fit: cover;
+    }
+
+    .w-2rem {
+        width: 2rem;
+    }
+
+    .w-3rem {
+        width: 3rem;
+    }
+
+    .w-4rem {
+        width: 4rem;
+    }
+
+    .w-5rem {
+        width: 5rem;
+    }
+
+    .w-6rem {
+        width: 6rem;
+    }
+
+    .w-7rem {
+        width: 7rem;
+    }
+
+    .w-10rem {
+        width: 10rem;
+    }
+
+    .w-15rem {
+        width: 15rem;
+    }
+
+    .w-20rem {
+        width: 20rem;
+    }
+
+    .w-30rem {
+        width: 30rem;
+    }
+
+    .shipment_request_registration_table {
+        width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .table_scroll {
+        display: block;
+        overflow-x: scroll;
+        overflow-y: scroll;
+        height: 75vh;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .dropdown-menu {
+        left: -100px;
+    }
+}
+
+
+/*テーブルの偶数行の色を変更*/
+.tr_even:nth-of-type(4n-1) , .tr_even2:nth-of-type(4n) {
+    background-color: #fed4;
+}
+
+
+
+/* 20210715表示調整　向井 */
+/* セル内の入力欄のはみ出しを修正 */
+.input {
+    margin: 0!important;
+    width: 100%;
+}
+
+/* 以上PC */
+
+/* 以下SP */
+@media screen and (max-width:991px) {
+    /*ヘッダー*/
+    .site_title {
+        font-size: 20px;
+        font-weight: bold;
+        margin-top:1rem;
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+
+    .login_user {
+        text-align: center;
+    }
+
+    .navbar {
+        margin-bottom: 1rem;
+    }
+
+    /* ログイン画面のid,passの線を消す */
+    .login_password, .login_id {
+        border: none!important;
+    }
+
+    /* ボタン */
+    .button {
+        width: 100%;
+        box-shadow: 3px 3px #aaa8;
+        border: none;
+        padding: .5rem;
+    }
+
+    .half_button {
+        width: 50%;
+        box-shadow: 3px 3px #aaa8;
+        border: none;
+        padding: .5rem;
+    }
+
+    .button_wrapper {
+        margin-bottom: 3rem;
+    }
+    /* ページのタイトル */
+    .page_title {
+        font-size: 18px;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    /* 商品所有者選択 */
+    .select_owner_wrapper {
+        margin-bottom: 3rem;
+    }
+
+    .select_owner {
+        margin-bottom: 1rem;
+    }
+
+    .select_owner_text {
+        font-weight: bold;
+        padding-right: 1rem;
+        margin-bottom: .5rem;
+    }
+
+    /* テーブル */
+    .required {
+        font-weight: bold!important;
+        color: #a33;
+    }
+
+    .required_message {
+        font-size: .8rem;
+    }
+
+    .caption {
+        caption-side: top;
+    }
+
+    .sp_column_name {
+        background-color: #dfd;
+    }
+
+    .sp_table_even:nth-of-type(even) {
+        background-color: #fed4;
+    }
+
+    .sp_table_odd:nth-of-type(odd) {
+        background-color: #fed4;
+    }
+
+    .table {
+        width: 100%;
+        text-align: center;
+        border-bottom: 1px solid #888;
+    }
+
+    .table th {
+        padding-top: .3rem;
+        padding-bottom: .5rem;
+        font-weight: normal;
+    }
+
+    .table td {
+        padding-bottom: 2rem;
+        height: 100%;
+        border: none;
+    }
+
+    .table_cell_half {
+        width: 50%;
+    }
+
+    .table_input {
+        width: 100%;
+        font-size: 16px;
+        padding-right: .5rem;
+        padding-left: .5rem;
+        box-sizing:border-box;
+        border: 1px solid #888;
+        border-radius: 4px;
+    }
+}
+
+.goods_img_wrapper {
+    width: 250px;
+    height: 250px;
+    margin: 1rem auto;
+}
+
+.goods_img {
+    width:auto;
+    height:auto;
+    max-width: 250px;
+    max-height: 250px;
+}
+
+.bottom_button {
+    position: fixed;
+    bottom: 60px;
+    left: 0;
+}
+/* 以上SP */
